@@ -23,30 +23,3 @@ def replace_null_values(df: DataFrame, replace: dict[str, Any]) -> DataFrame:
         except Exception:
             raise KeyError(f"field {k} not found.")
     return df
-
-
-def most_selling(df: DataFrame, n_plot: int = None) -> DataFrame | None:
-    most_sell = (
-        df[["Product", "Category", "MPrice", "MQty"]]
-        .groupby(by=["Product", "MPrice"])
-        .agg({"MQty": "count", "MPrice": "sum"})
-        .rename(columns={"MQty": "Amount", "MPrice": "Sum"})
-    )
-
-    most_sell = (
-        most_sell.groupby("Product")
-        .sum()
-        .sort_values("Amount", ascending=False)
-    )
-
-    if n_plot:
-        n_most_sell = most_sell.head(n_plot)
-        n_most_sell.plot.pie(
-            y="Amount",
-            figsize=(18, 18),
-            autopct=lambda x: percent_format(x, n_most_sell["Amount"].sum()),
-            title="Most Sell Products",
-        )
-        return
-
-    return most_sell
