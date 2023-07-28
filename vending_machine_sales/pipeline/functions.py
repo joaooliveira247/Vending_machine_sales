@@ -1,4 +1,3 @@
-from vending_machine_sales.pipeline.utils import percent_format
 from pandas import DataFrame, Series
 from typing import Any
 
