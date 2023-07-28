@@ -1,2 +1,6 @@
-def percent_format(x: float, total: int | float) -> str:
-    return "{:.2f} %\n{}".format(x, round(total * (x / 100)))
+def numeric_format(type_: str, x: float, total: int | float) -> str:
+    match type_:
+        case "percentage":
+            return "{:.2f} %\n{}".format(x, round(total * (x / 100)))
+        case "money":
+            return "{:.2f} %\nUSD: {:.2f}".format(x, total * (x / 100))
