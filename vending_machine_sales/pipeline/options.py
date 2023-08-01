@@ -11,7 +11,7 @@ class Aggregator(Enum):
 @dataclass
 class GroupOptions:
     fields: list[str]
-    group_field: list[str]
+    group_fields: list[str]
     agg_field: str
     agg: Aggregator
     rename: str
