@@ -17,7 +17,9 @@ class GroupOptions:
     rename: str
 
 
-
 @dataclass
 class PlotOptions:
-    ...
+    n_plot: int
+    field: str
+    type_: str
+    title: str
