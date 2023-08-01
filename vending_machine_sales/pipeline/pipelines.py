@@ -4,10 +4,9 @@ from vending_machine_sales.pipeline.functions import (
 )
 from vending_machine_sales.pipeline.utils import numeric_format
 from pandas import DataFrame
-from abc import ABC, abstractmethod
 
 
-class BasePipeline(ABC):
+class BasePipeline:
     def __init__(self, df: DataFrame) -> None:
         self.df = df
 
@@ -40,14 +39,6 @@ class BasePipeline(ABC):
 
         group = group.sort_values(rename, ascending=False)
         return group
-
-    @abstractmethod
-    def by_amount() -> DataFrame | None:
-        ...
-
-    @abstractmethod
-    def by_income() -> DataFrame | None:
-        ...
 
 
 class MostSellPipeline(BasePipeline):
