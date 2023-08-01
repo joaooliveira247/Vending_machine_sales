@@ -4,6 +4,11 @@ from vending_machine_sales.pipeline.functions import (
 )
 from vending_machine_sales.pipeline.utils import numeric_format
 from pandas import DataFrame
+from vending_machine_sales.pipeline.options import (
+    GroupOptions,
+    PlotOptions,
+    Aggregator,
+)
 
 
 class BasePipeline:
@@ -11,55 +16,74 @@ class BasePipeline:
         self.df = df
 
     @staticmethod
-    def _plot(
-        df: DataFrame,
-        n_plot: int,
-        field: str,
-        type_: str,
-    ) -> None:
-        df = df.head(n_plot)
-        df.plot.pie(
-            y=field,
-            figsize=(18, 18),
-            autopct=lambda x: numeric_format(type_, x, df[field].sum()),
-            title="Most Sell Products",
+    def _group_by(df: DataFrame, options: GroupOptions) -> DataFrame:
+        group = (
+            df[options.fields]
+            .groupby(by=options.group_fields)
+            .agg({options.agg_field: options.agg})
+            .rename(columns={options.agg_field: options.rename})
         )
-        return
+
+        group = group.sort_values(options.rename, ascending=False)
+        return group
 
     @staticmethod
-    def _group_by(
-        df: DataFrame, field: str, agg: str, rename: str = None
-    ) -> DataFrame:
-        group = (
-            df[["Product", field]]
-            .groupby(by=["Product"])
-            .agg({field: agg})
-            .rename(columns={field: rename})
+    def _plot(df: DataFrame, options: PlotOptions) -> None:
+        df = df.head(options.n_plot)
+        df.plot.pie(
+            y=options.field,
+            figsize=(18, 18),
+            autopct=lambda x: numeric_format(
+                options.type_, x, df[options.field].sum()
+            ),
+            title=options.title,
         )
-
-        group = group.sort_values(rename, ascending=False)
-        return group
+        return
 
 
 class MostSellPipeline(BasePipeline):
     def by_amount(self, n_plot: int = None) -> DataFrame | None:
         most_sell_amount = super()._group_by(
-            self.df, "MQty", "count", "Amount"
+            self.df,
+            GroupOptions(
+                ["Product", "MQty"],
+                ["Product"],
+                "MQty",
+                Aggregator.count,
+                "Amount",
+            ),
         )
 
         if n_plot:
-            super()._plot(most_sell_amount, n_plot, "Amount", "percentage")
+            super()._plot(
+                most_sell_amount,
+                PlotOptions(
+                    n_plot, "Amount", "percentage", "Most Sell Products"
+                ),
+            )
             return
 
         return most_sell_amount
 
     def by_income(self, n_plot: int = None) -> DataFrame | None:
         most_sell_income = super()._group_by(
-            self.df, "MPrice", "sum", "Income"
+            self.df,
+            GroupOptions(
+                ["Product", "MPrice"],
+                ["Product"],
+                "MPrice",
+                Aggregator.sum,
+                "Income",
+            ),
         )
 
         if n_plot:
-            super()._plot(most_sell_income, n_plot, "Income", "money")
+            super()._plot(
+                most_sell_income,
+                PlotOptions(
+                    n_plot, "Income", "money", "Most Profitable Products"
+                ),
+            )
             return
 
         return most_sell_income
