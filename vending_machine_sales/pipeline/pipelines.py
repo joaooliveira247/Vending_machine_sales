@@ -90,4 +90,34 @@ class MostSellPipeline(BasePipeline):
 
 
 class BestPlacePipeline(BasePipeline):
-    ...
+    def by_amount(self, n_plot: int = None) -> DataFrame | None:
+        best_place_amount = self._group_by(
+            self.df,
+            GroupOptions(
+                [
+                    "Location",
+                    "Machine",
+                    "Product",
+                    "MQty",
+                    "TransDate",
+                    "MPrice",
+                ],
+                ["Location"],
+                "MQty",
+                Aggregator.sum,
+                "Amount",
+            ),
+        )
+        if n_plot:
+            super()._plot(
+                best_place_amount,
+                PlotOptions(
+                    n_plot,
+                    "Amount",
+                    "percentage",
+                    "Most Sell Products by location",
+                ),
+            )
+            return
+
+        return best_place_amount
