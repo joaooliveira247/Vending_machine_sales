@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 from numpy import sum, size
+from vending_machine_sales.pipeline.utils import TypeFormat
 
 
 class Aggregator(Enum):
@@ -21,5 +22,5 @@ class GroupOptions:
 class PlotOptions:
     n_plot: int
     field: str
-    type_: str
+    type_: TypeFormat
     title: str
