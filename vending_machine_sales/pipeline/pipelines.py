@@ -2,7 +2,7 @@ from vending_machine_sales.pipeline.functions import (
     null_fields,
     replace_null_values,
 )
-from vending_machine_sales.pipeline.utils import numeric_format
+from vending_machine_sales.pipeline.utils import numeric_format, TypeFormat
 from pandas import DataFrame
 from vending_machine_sales.pipeline.options import (
     GroupOptions,
@@ -58,7 +58,7 @@ class MostSellPipeline(BasePipeline):
             super()._plot(
                 most_sell_amount,
                 PlotOptions(
-                    n_plot, "Amount", "percentage", "Most Sell Products"
+                    n_plot, "Amount", TypeFormat.amount, "Most Sell Products"
                 ),
             )
             return
@@ -81,7 +81,10 @@ class MostSellPipeline(BasePipeline):
             super()._plot(
                 most_sell_income,
                 PlotOptions(
-                    n_plot, "Income", "money", "Most Profitable Products"
+                    n_plot,
+                    "Income",
+                    TypeFormat.monetary,
+                    "Most Profitable Products",
                 ),
             )
             return
@@ -114,7 +117,7 @@ class BestPlacePipeline(BasePipeline):
                 PlotOptions(
                     n_plot,
                     "Amount",
-                    "percentage",
+                    TypeFormat.amount,
                     "Most Sell Products by location",
                 ),
             )
