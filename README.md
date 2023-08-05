@@ -2,6 +2,21 @@
 
 ## ℹ️ About:
 
+This project was doing with purpose be a portfolio.
+
+So it didn't have a wrote challenge, I had to use my imagination.
+
+1º Do all data cleaning:
+  - Remove null fields.
+  - Infer types of columns.
+
+2º Put it inside a class named Pipeline.
+  - Provide methods to get different types of analytics and plot graphics.
+
+## ⚠️ you can see all data rendered:
+
+  - [Most Sell](./vending_machine_sales/render/most_sell.ipynb)
+
 ## 💻 Requirements:
 
 ### `Python >= 3.10`
