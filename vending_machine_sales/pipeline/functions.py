@@ -1,5 +1,12 @@
 from pandas import DataFrame, Series
 from typing import Any
+from enum import Enum
+from time import strftime
+
+
+class ReplaceFields(Enum):
+    numeric = 0
+    object = "Unknow"
 
 
 def null_fields(df: DataFrame) -> list[tuple[str, int]]:
