@@ -3,17 +3,19 @@ from vending_machine_sales.pipeline.functions import (
     replace_null_values,
 )
 from vending_machine_sales.pipeline.utils import numeric_format, TypeFormat
-from pandas import DataFrame
+from pandas import DataFrame, plotting
 from vending_machine_sales.pipeline.options import (
     GroupOptions,
     PlotOptions,
     Aggregator,
+    PlotGrafic,
 )
 
 
 class BasePipeline:
     def __init__(self, df: DataFrame) -> None:
         self.df = df
+        self.df["TransDate"] = self.df["TransDate"].dt.strftime("%m/%Y")
 
     @staticmethod
     def _group_by(df: DataFrame, options: GroupOptions) -> DataFrame:
@@ -30,13 +32,14 @@ class BasePipeline:
     @staticmethod
     def _plot(df: DataFrame, options: PlotOptions) -> None:
         df = df.head(options.n_plot)
-        df.plot.pie(
+        df.plot(
             y=options.field,
             figsize=(18, 18),
             autopct=lambda x: numeric_format(
                 options.type_, x, df[options.field].sum()
             ),
             title=options.title,
+            kind=options.kind.name,
         )
         return
 
@@ -58,7 +61,11 @@ class MostSellPipeline(BasePipeline):
             super()._plot(
                 most_sell_amount,
                 PlotOptions(
-                    n_plot, "Amount", TypeFormat.amount, "Most Sell Products"
+                    PlotGrafic.pie.name,
+                    n_plot,
+                    "Amount",
+                    TypeFormat.amount,
+                    "Most Sell Products",
                 ),
             )
             return
@@ -81,6 +88,7 @@ class MostSellPipeline(BasePipeline):
             super()._plot(
                 most_sell_income,
                 PlotOptions(
+                    PlotGrafic.pie,
                     n_plot,
                     "Income",
                     TypeFormat.monetary,
@@ -107,7 +115,7 @@ class BestPlacePipeline(BasePipeline):
                 ],
                 ["Location"],
                 "MQty",
-                Aggregator.sum,
+                Aggregator.count,
                 "Amount",
             ),
         )
@@ -115,6 +123,7 @@ class BestPlacePipeline(BasePipeline):
             super()._plot(
                 best_place_amount,
                 PlotOptions(
+                    PlotGrafic.pie,
                     n_plot,
                     "Amount",
                     TypeFormat.amount,
@@ -124,3 +133,56 @@ class BestPlacePipeline(BasePipeline):
             return
 
         return best_place_amount
+
+    def by_income(self, n_plot: int = None) -> DataFrame | None:
+        best_place_income = self._group_by(
+            self.df,
+            GroupOptions(
+                [
+                    "Location",
+                    "Machine",
+                    "Product",
+                    "MQty",
+                    "TransDate",
+                    "MPrice",
+                ],
+                ["Location"],
+                "MPrice",
+                Aggregator.sum,
+                "Income",
+            ),
+        )
+
+        if n_plot:
+            super()._plot(
+                best_place_income,
+                PlotOptions(
+                    PlotGrafic.pie,
+                    n_plot,
+                    "Income",
+                    TypeFormat.monetary,
+                    "Most Sell Products by location",
+                ),
+            )
+            return
+        return best_place_income
+
+    def by_date(self, n_plot: int = None) -> DataFrame | None:
+        best_place_date = self._group_by(
+            self.df,
+            GroupOptions(
+                [
+                    "Location",
+                    "Machine",
+                    "Product",
+                    "MQty",
+                    "TransDate",
+                    "MPrice",
+                ],
+                ["TransDate"],
+                "MPrice",
+                Aggregator.sum,
+                "Income",
+            ),
+        )
+        return best_place_date
