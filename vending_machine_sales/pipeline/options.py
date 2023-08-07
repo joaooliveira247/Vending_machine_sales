@@ -9,6 +9,11 @@ class Aggregator(Enum):
     sum = sum
 
 
+class PlotGrafic(Enum):
+    pie = "pie"
+    line = "line"
+
+
 @dataclass
 class GroupOptions:
     fields: list[str]
@@ -20,6 +25,7 @@ class GroupOptions:
 
 @dataclass
 class PlotOptions:
+    kind: PlotGrafic
     n_plot: int
     field: str
     type_: TypeFormat
