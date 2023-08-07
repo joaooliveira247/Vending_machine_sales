@@ -29,7 +29,7 @@ def validate_df(df: pd.DataFrame) -> pd.DataFrame | None:
 
 def load_csv(path: str) -> pd.DataFrame | None:
     try:
-        df = pd.read_csv(path)
+        df = pd.read_csv(path, parse_dates=["TransDate", "Prcd Date"])
         df.infer_objects()
     except FileNotFoundError:
         raise FileNotFoundError(f"{path} not found.")
